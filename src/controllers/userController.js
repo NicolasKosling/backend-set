@@ -65,3 +65,36 @@ exports.getUsers = async (req, res, next) => {
     next(err);
   }
 };
+
+exports.assignStudentToClassGroup = async (req, res, next) => {
+  try {
+    //Assume teacher is authenticated and their ID is in req.user.id
+    const teacherId = req.user.isDocent; // Get the authenticated user's ID from the request
+    if (!teacherId) {
+      return res
+        .status(403)
+        .json({ message: "Only teachers can assign students" });
+    }
+
+    const { studentId, classGroupId } = req.body;
+    // Optionally, verify that the teacher manages the classGroupId
+    // skipped for simplicity atm
+
+    // Update the student (who must not be a teacher)
+    const student = await User.findOneAndUpdate(
+      { _id: studentId, isDocent: false },
+      { classGroupId },
+      { new: true }
+    );
+
+    if (!student) {
+      return res
+        .status(404)
+        .json({ message: "Student not found or is not eligible" });
+    }
+
+    res.json({ message: "Student assigned successfully", student });
+  } catch (err) {
+    next(err);
+  }
+};

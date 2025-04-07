@@ -3,16 +3,24 @@ const ClassGroup = require("../models/ClassGroup");
 
 exports.createClassGroup = async (req, res, next) => {
   try {
-    const { naam, beginjaar, eindjaar, opleiding, studenten } = req.body;
-    const classGroup = new ClassGroup({
-      naam,
-      beginjaar,
-      eindjaar,
-      opleiding,
-      studenten,
+    // Assume teacher is authenticated and req.user contains teacher info.
+    if (!req.user.isDocent) {
+      return res
+        .status(403)
+        .json({ message: "Only teachers can create class groups" });
+    }
+
+    const { naam, beginjaar, eindjaar, opleiding } = req.body;
+    const newGroup = new ClassGroup({ naam, beginjaar, eindjaar, opleiding });
+    const savedGroup = await newGroup.save();
+
+    // Optionally, update the teacher's managesClassGroups array.
+    const teacherId = req.user.id;
+    await User.findByIdAndUpdate(teacherId, {
+      $push: { managesClassGroups: savedGroup._id },
     });
-    await classGroup.save();
-    res.status(201).json(classGroup);
+
+    res.status(201).json(savedGroup);
   } catch (err) {
     next(err);
   }
