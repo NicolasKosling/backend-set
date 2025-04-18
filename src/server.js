@@ -38,6 +38,9 @@ app.use("/api/classes", classRoutes);
 app.use("/api/assignments", assignmentRoutes);
 app.use("/api/stagedays", stagedayRoutes);
 
+const listEndpoints = require("express-list-endpoints");
+console.log(listEndpoints(app));
+
 // Error handling middleware (should be after routes)
 const { errorHandler } = require("./middleware/errorHandler");
 app.use(errorHandler);
