@@ -7,13 +7,13 @@ const JWT_SECRET = process.env.JWT_SECRET || "your_jwt_secret";
 // Register a new user (student or docent)
 exports.register = async (req, res, next) => {
   try {
-    const { isDocent, naam, voornaam, email, telefoonnummer, password } =
+    const { isDocent, voornaam, achternaam, email, telefoonnummer, password } =
       req.body;
     const hashedPassword = await bcrypt.hash(password, 10);
     const user = new User({
       isDocent,
-      naam,
       voornaam,
+      achternaam,
       email,
       telefoonnummer,
       password: hashedPassword,
