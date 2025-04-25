@@ -10,7 +10,7 @@ const app = express();
 app.use(express.json());
 app.use(
   cors({
-    origin: "http://localhost:3000",
+    origin: process.env.FRONTEND_ORIGIN || "http://localhost:3000",
   })
 );
 
@@ -28,16 +28,21 @@ mongoose
 
 // Import Routes
 const userRoutes = require("./routes/userRoutes");
+const courseRoutes = require("./routes/courseRoutes");
+const subjectRoutes = require("./routes/subjectRoutes");
 const classRoutes = require("./routes/classRoutes");
 const assignmentRoutes = require("./routes/assignmentRoutes");
 const stagedayRoutes = require("./routes/stagedayRoutes");
 
-// Use Routes
+// Mount Routes
 app.use("/api/users", userRoutes);
+app.use("/api/courses", courseRoutes);
+app.use("/api/courses/:courseId/subjects", subjectRoutes);
 app.use("/api/classes", classRoutes);
 app.use("/api/assignments", assignmentRoutes);
 app.use("/api/stagedays", stagedayRoutes);
 
+// Development helper: list all endpoints
 const listEndpoints = require("express-list-endpoints");
 console.log(listEndpoints(app));
 
@@ -45,7 +50,7 @@ console.log(listEndpoints(app));
 const { errorHandler } = require("./middleware/errorHandler");
 app.use(errorHandler);
 
-// Export app for testing (if needed)
+// Export app for testing
 module.exports = app;
 
 // Start server if not in test mode

@@ -4,8 +4,13 @@ const PDFDocument = require("pdfkit");
 
 exports.createStageDay = async (req, res, next) => {
   try {
-    const { datum, beschrijving, afbeelding, student } = req.body;
-    const stageDay = new StageDay({ datum, beschrijving, afbeelding, student });
+    const { datum, beschrijving, afbeelding } = req.body;
+    const stageDay = new StageDay({
+      datum,
+      beschrijving,
+      afbeelding,
+      student: req.user.id, // ← take student from token, not from body
+    });
     await stageDay.save();
     res.status(201).json(stageDay);
   } catch (err) {
